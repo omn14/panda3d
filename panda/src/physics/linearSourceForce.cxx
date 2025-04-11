@@ -62,23 +62,23 @@ make_copy() {
 LVector3 LinearSourceForce::
 get_child_vector(const PhysicsObject *po) {
   LVector3 distance_vector = po->get_position() - get_force_center();
-  PN_stdfloat distance = distance_vector.length();
+  PN_stdfloat distance_squared = distance_vector.length_squared();
 
-  if (distance == 0) {
+  if (distance_squared == 0) {
     return distance_vector;
   }
 
   PN_stdfloat scalar = get_scalar_term();
 
   switch (get_falloff_type()) {
-    case FT_ONE_OVER_R_OVER_DISTANCE:
-      return (distance_vector / distance) * scalar;
-    case FT_ONE_OVER_R_OVER_DISTANCE_SQUARED:
-      return (distance_vector / (distance * distance)) * scalar;
-    case FT_ONE_OVER_R_OVER_DISTANCE_CUBED:
-      return (distance_vector / (distance * distance * distance)) * scalar;
-    default:
-      return distance_vector * scalar;
+  case FT_ONE_OVER_R_OVER_DISTANCE:
+    return (distance_vector / sqrt(distance_squared)) * scalar;
+  case FT_ONE_OVER_R_OVER_DISTANCE_SQUARED:
+    return (distance_vector / distance_squared) * scalar;
+  case FT_ONE_OVER_R_OVER_DISTANCE_CUBED:
+    return (distance_vector / (distance_squared * sqrt(distance_squared))) * scalar;
+  default:
+    return distance_vector * scalar;
   }
 }
 
